@@ -48,10 +48,14 @@ COPY startup.py startup.py
 COPY redis.conf redis.conf
 COPY settings.json ./settings.json
 COPY ingress/ ./ingress
+COPY GivTCP/healthcheck.py /usr/local/bin/healthcheck.py
 
 # Copy static site files
 COPY --from=givtcp_vuejs_tmp /app/dist /app/ingress/
 
 EXPOSE 1883 3000 6379 8099
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+    CMD ["python3", "/usr/local/bin/healthcheck.py"]
 
 CMD ["python3", "/app/startup.py"]
